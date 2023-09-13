@@ -36,3 +36,4 @@ plt.plot([ 0, 0], [1, -2], '--', color='green', linewidth=2)
 
 # Saving the plot
 plt.savefig('./01-651340543-NEGRO-plot.jpg')
+plt.show()
