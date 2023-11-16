@@ -19,6 +19,7 @@ plt.savefig('./06-651340543-NEGRO-gen.png', dpi=400, bbox_inches='tight', transp
 
 # Put your clustering accuracy calculation here
 from sklearn.cluster import KMeans
+from itertools import permutations 
 
 X = list()
 labels = list()
@@ -33,30 +34,18 @@ labels = np.array(labels)
 kmeans = KMeans(n_clusters=10, random_state=0, n_init="auto").fit(X)
 cluster_assignments = kmeans.labels_
 
-accuracy = 0
-mapping = np.zeros((10, 10))
+mapping = np.zeros((10, 10), dtype=np.int64)
 for i in range(X.shape[0]):
     mapping[labels[i].item()][cluster_assignments[i]] += 1
 
-matched = list()
-for i in range(10):
-    matched.append(np.argmax(mapping[i, :]))
-
-i = 0
-while i < 10:
-    j = 0
-    while j < 10:
-        if matched[i] == matched[j] and i != j:
-            if mapping[i][int(matched[i])] > mapping[j][int(matched[j])]:
-                mapping[j][int(matched[j])] = -1
-                matched[j] = np.argmax(mapping[j, :])
-                i = -1
-                break
-        j+=1
-    i+=1
-
-for i, m in enumerate(matched):
-    accuracy += mapping[i][m]
+accuracy = 0 
+for m in list(permutations(range(0,10))):
+    tmp = 0
+    for true, association in enumerate(m):
+        tmp += mapping[true][association]
+    if tmp > accuracy:
+        accuracy = tmp
+        matched = m
     
 print(f'Accuracy clustering: {(accuracy/X.shape[0])*100:.2f}%')
 print(f'Mapping clustering: {matched}')
